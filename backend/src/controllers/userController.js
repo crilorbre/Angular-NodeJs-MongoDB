@@ -5,8 +5,8 @@ const jwt = require('jsonwebtoken');
 
 
 userController.signUpUser = async (req, res) =>{
-    const {email, password} = req.body;
-    const newUser = new User({email, password});
+    const {email, password, username, firstName, lastName} = req.body;
+    const newUser = new User({email, password, username, firstName, lastName});
     
     newUser.password = await newUser.encryptPassword(newUser.password);
 
@@ -28,6 +28,18 @@ userController.singInUser = async (req, res) =>{
    
     const token = jwt.sign({_id: user._id}, 'secretkey');
     res.status(200).json({token: token})
+}
+
+userController.getUserByEmail = async (req, res) => {
+    const {email} = req.params;
+    const user = await User.find({email: email});
+    res.json(user);
+}
+
+userController.getUserByUsername = async (req, res) => {
+    const {username} = req.params;
+    const user = await User.find({username: username});
+    res.json(user);
 }
 
 module.exports = userController;
