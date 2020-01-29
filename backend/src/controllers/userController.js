@@ -17,17 +17,17 @@ userController.signUpUser = async (req, res) =>{
 }
 
 userController.singInUser = async (req, res) =>{
-    const {email, password} = req.body;
-    //Buscamos el usuario por el correo
-    const user = await User.findOne({email})
+    const {username, password} = req.body;
+    //Buscamos el usuario por el username
+    const user = await User.findOne({username})
 
-    if(!user) return res.status(401).send("The email doesn't exist");
+    if(!user) return res.status(401).send("The username doesn't exist");
 
     const validPassword = await user.validatePassword(password)
     if(!validPassword) return res.status(401).send("Wrong password");   
    
     const token = jwt.sign({_id: user._id}, 'secretkey');
-    res.status(200).json({token: token})
+    res.status(200).json({token})
 }
 
 userController.getUserByEmail = async (req, res) => {
