@@ -4,20 +4,10 @@ const jwt = require('jsonwebtoken');
 const userController = require('../controllers/userController');
 
 
-
-router.get('/', (req, res) => res.send('Hello world'));
 router.post('/signup', userController.signUpUser);
 router.post('/signin', userController.singInUser);
 router.get('/email/:email', userController.getUserByEmail)
 router.get('/username/:username', userController.getUserByUsername)
-
-router.get('/task', (req, res) => {
-    res.json({
-        _id: 1,
-        name: 'task one',
-        description: 'task prueba'
-    })
-})
 
 router.get('/private-task', verifyToken, (req, res) =>{
     res.json({
