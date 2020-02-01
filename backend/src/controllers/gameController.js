@@ -8,9 +8,14 @@ gameController.getGames = async (req, res) => {
 }
 
 gameController.getGameById = async(req, res) =>{
-    const id = req.params.id;
-    const game = await Game.findById(id)
-    res.json(game)
+    try {
+        const id = req.params.id;
+        const game = await Game.findById(id)
+        res.json(game)
+    } catch (error) {
+        res.json(null)
+    }
+    
 }
 
 gameController.createGame = async(req, res) => {

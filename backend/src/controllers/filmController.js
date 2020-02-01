@@ -8,9 +8,14 @@ filmController.getFilms = async (req, res) => {
 }
 
 filmController.getFilmById = async (req, res) => {
-    const id = req.params.id;
-    const film = await Film.findById(id);
-    res.status(200).json(film);
+    try {
+        const id = req.params.id;
+        const film = await Film.findById(id);
+        res.status(200).json(film);
+    } catch (error) {
+        res.json(null)
+    }
+    
 }
 
 filmController.createFilm = async (req, res) => {
