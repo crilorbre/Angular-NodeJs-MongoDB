@@ -5,31 +5,82 @@ const jwt = require('jsonwebtoken');
 //Variable de entorno
 const { SECRET_KEY } = require('../config/index') 
 
-
+//Registrar a un usuario
 userController.signUpUser = async (req, res) =>{
-    const {email, password, username, firstName, lastName} = req.body;
-    const newUser = new User({email, password, username, firstName, lastName});
-    
-    newUser.password = await newUser.encryptPassword(newUser.password);
 
-    await newUser.save();
-   
-    const token = jwt.sign({_id: newUser._id}, SECRET_KEY);
-    res.status(200).json({token: token})
+    try {
+        const {email, password, username, firstName, lastName} = req.body;
+        const newUser = new User({email, password, username, firstName, lastName})
+
+        let usernameTaken = await validateUsername(newUser.username);
+        if(usernameTaken){
+            return res.status(400).json({
+                message: 'Username is already taken.',
+                success: false
+            })
+        }
+
+        let emailTaken = await validateEmail(newUser.email);
+        if(emailTaken){
+            return res.status(400).json({
+                message: 'Email is already taken.',
+                success: false
+            })
+        }
+        
+        
+        newUser.password = await newUser.encryptPassword(newUser.password);
+
+        await newUser.save();
+    
+        /*const token = jwt.sign({_id: newUser._id}, SECRET_KEY);
+        res.status(200).json({token: token})*/
+    } catch (error) {
+        return res.status(500).json({
+            message: 'Unable to create your account',
+            success: false
+        })
+    }
+    
 }
 
+//Métodos auxiliares
+const validateUsername = async (username)=>{
+    let user = await User.findOne({username});
+    return user ? true: false;
+}
+
+const validateEmail = async (email)=>{
+    let user = await User.findOne({email});
+    return user ? true: false;
+}
+
+//Login usuario
 userController.singInUser = async (req, res) =>{
     const {username, password} = req.body;
     //Buscamos el usuario por el username
     const user = await User.findOne({username})
 
-    if(!user) return res.status(401).send("The username doesn't exist");
+    if(!user) return res.status(404).json({
+        message: 'Username is not found. Invalid login credentials',
+        success: false
+    });
 
     const validPassword = await user.validatePassword(password)
-    if(!validPassword) return res.status(401).send("Wrong password");   
+    if(!validPassword) return res.status(403).json({
+        message: 'Incorrect password',
+        success: false
+    });   
    
-    const token = jwt.sign({_id: user._id}, SECRET_KEY);
-    res.status(200).json({token})
+    const token = jwt.sign({_id: user._id, username: user.username, 
+        email: user.email}, SECRET_KEY);
+
+    const result = {username: user.username, email: user.email, token}
+    res.status(200).json({
+        ...result,
+        message: 'You are now logged in!',
+        success: true
+    })
 }
 
 userController.getUserByEmail = async (req, res) => {
