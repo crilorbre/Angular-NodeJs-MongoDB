@@ -2,6 +2,8 @@ const userController = {};
 const User = require('../models/User');
 const jwt = require('jsonwebtoken');
 
+//Variable de entorno
+const { SECRET_KEY } = require('../config/index') 
 
 
 userController.signUpUser = async (req, res) =>{
@@ -12,7 +14,7 @@ userController.signUpUser = async (req, res) =>{
 
     await newUser.save();
    
-    const token = jwt.sign({_id: newUser._id}, 'secretkey');
+    const token = jwt.sign({_id: newUser._id}, SECRET_KEY);
     res.status(200).json({token: token})
 }
 
@@ -26,7 +28,7 @@ userController.singInUser = async (req, res) =>{
     const validPassword = await user.validatePassword(password)
     if(!validPassword) return res.status(401).send("Wrong password");   
    
-    const token = jwt.sign({_id: user._id}, 'secretkey');
+    const token = jwt.sign({_id: user._id}, SECRET_KEY);
     res.status(200).json({token})
 }
 

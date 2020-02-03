@@ -1,10 +1,11 @@
 //Fichero requerido para iniciar mi servidor
-
 const express = require('express')
 const morgan = require('morgan')
 const cors = require('cors')
 const app = express();
 
+//Variables de entorno
+const { PORT } = require('./config/index')
 
 //Conexion a BD
 require('./database');
@@ -21,5 +22,5 @@ app.use('/films', require('./routes/films'))
 
 
 //Lanzar server
-app.listen(3000);
-console.log('Server on port', 3000);
+app.listen(PORT);
+console.log('Server started on port', PORT);
