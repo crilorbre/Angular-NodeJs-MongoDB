@@ -1,11 +1,9 @@
-const checkTokenController = {};
 const jwt = require('jsonwebtoken');
 
 //Variable de entorno
 const { SECRET_KEY } = require('../config/index') 
 
-
-checkTokenController.verifyToken = async (req, res, next) => {
+const verifyToken = async (req, res, next) => {
     if(!req.headers.authorization){
         return res.status(401).send('Unauthorized request')
     }
@@ -22,4 +20,6 @@ checkTokenController.verifyToken = async (req, res, next) => {
     next();
 }
 
-module.exports = checkTokenController;
+module.exports = {
+    verifyToken
+}

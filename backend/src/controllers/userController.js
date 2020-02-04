@@ -75,7 +75,7 @@ userController.singInUser = async (req, res) =>{
     const token = jwt.sign({_id: user._id, username: user.username, 
         email: user.email}, SECRET_KEY);
 
-    const result = {username: user.username, email: user.email, token}
+    const result = {username: user.username, email: user.email, token: `Bearer ${token}`}
     res.status(200).json({
         ...result,
         message: 'You are now logged in!',
