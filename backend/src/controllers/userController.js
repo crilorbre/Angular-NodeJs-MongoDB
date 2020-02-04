@@ -2,6 +2,9 @@ const userController = {};
 const User = require('../models/User');
 const jwt = require('jsonwebtoken');
 
+//Metodos auxiliates
+const {validateUsername, validateEmail} = require('../utils/user')
+
 //Variable de entorno
 const { SECRET_KEY } = require('../config/index') 
 
@@ -44,17 +47,6 @@ userController.signUpUser = async (req, res) =>{
     
 }
 
-//Métodos auxiliares
-const validateUsername = async (username)=>{
-    let user = await User.findOne({username});
-    return user ? true: false;
-}
-
-const validateEmail = async (email)=>{
-    let user = await User.findOne({email});
-    return user ? true: false;
-}
-
 //Login usuario
 userController.singInUser = async (req, res) =>{
     const {username, password} = req.body;
@@ -94,5 +86,6 @@ userController.getUserByUsername = async (req, res) => {
     const user = await User.find({username: username});
     res.json(user);
 }
+
 
 module.exports = userController;

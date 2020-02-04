@@ -2,6 +2,7 @@
 const express = require('express')
 const morgan = require('morgan')
 const cors = require('cors')
+const passport = require('passport')
 const app = express();
 
 //Variables de entorno
@@ -14,6 +15,9 @@ require('./database');
 app.use(cors())
 app.use(express.json())
 app.use(morgan('dev'))
+app.use(passport.initialize());
+
+require('./middleware/passport')(passport)
 
 //Routas definidas
 app.use('/users', require('./routes/user'))

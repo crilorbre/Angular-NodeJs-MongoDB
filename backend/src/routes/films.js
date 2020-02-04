@@ -1,12 +1,12 @@
 const { Router } = require('express');
 const router = Router();
 const filmController = require('../controllers/filmController');
-const { verifyToken } = require('../middleware/auth')
+const { userAuth } = require('../middleware/auth-passport')
 
 router.get('', filmController.getFilms);
-router.get('/:id', verifyToken, filmController.getFilmById);
-router.post('/', verifyToken, filmController.createFilm);
-router.put('/:id', verifyToken, filmController.updateFilm);
-router.delete('/:id', verifyToken, filmController.deleteFilm);
+router.get('/:id', userAuth, filmController.getFilmById);
+router.post('/', userAuth, filmController.createFilm);
+router.put('/:id', userAuth, filmController.updateFilm);
+router.delete('/:id', userAuth, filmController.deleteFilm);
 
 module.exports = router;
