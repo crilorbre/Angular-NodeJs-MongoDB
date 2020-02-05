@@ -65,7 +65,7 @@ userController.singInUser = async (req, res) =>{
     });   
    
     const token = jwt.sign({_id: user._id, username: user.username, 
-        email: user.email}, SECRET_KEY);
+        email: user.email}, SECRET_KEY, {expiresIn: "1 days"});
 
     const result = {username: user.username, email: user.email, token: `Bearer ${token}`}
     res.status(200).json({
