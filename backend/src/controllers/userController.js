@@ -6,7 +6,7 @@ const jwt = require('jsonwebtoken');
 const {validateUsername, validateEmail} = require('../utils/user')
 
 //Variable de entorno
-const { SECRET_KEY } = require('../config/index') 
+const { SECRET_KEY, REFRESH_KEY } = require('../config/index') 
 
 //Registrar a un usuario
 userController.signUpUser = async (req, res) =>{
@@ -64,15 +64,40 @@ userController.singInUser = async (req, res) =>{
         success: false
     });   
    
-    const token = jwt.sign({_id: user._id, username: user.username, 
+    const accessToken = jwt.sign({_id: user._id, username: user.username, 
         email: user.email}, SECRET_KEY, {expiresIn: "1 days"});
 
-    const result = {username: user.username, email: user.email, token: `Bearer ${token}`}
+    const refreshToken = jwt.sign({_id: user._id, username: user.username, 
+        email: user.email}, REFRESH_KEY, {expiresIn: "5 days"});
+
+    const result = {username: user.username, email: user.email, token: accessToken, refreshToken: refreshToken}
     res.status(200).json({
         ...result,
         message: 'You are now logged in!',
         success: true
     })
+}
+
+userController.refreshToken = async (req, res) => {
+    try {
+        const {refreshToken} = req.body;
+        
+        const payload = jwt.verify(refreshToken, REFRESH_KEY);
+
+        const user = await User.findById(payload._id);
+        if(user){
+            const accessToken = jwt.sign({_id: user._id, username: user.username, 
+                email: user.email}, SECRET_KEY, {expiresIn: "1 days"}); 
+            res.json({accessToken})
+        }else{
+            res.status(401).json({message: 'error 401'})
+        }
+    } catch (error) {
+        res.status(500).json({message: 'error del servidor'})
+    }
+        
+    
+
 }
 
 userController.getUserByEmail = async (req, res) => {

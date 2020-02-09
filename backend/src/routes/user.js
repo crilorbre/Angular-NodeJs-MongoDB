@@ -11,6 +11,8 @@ router.get('/username/:username', userController.getUserByUsername)
 router.get('/profile', userAuth, async(req, res) => {
     return res.json(serializeUser(req.user))
 })
+router.post('/refresh', userController.refreshToken);
+
 
 module.exports = router;
 
