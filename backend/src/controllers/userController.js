@@ -65,10 +65,10 @@ userController.singInUser = async (req, res) =>{
     });   
    
     const accessToken = jwt.sign({_id: user._id, username: user.username, 
-        email: user.email}, SECRET_KEY, {expiresIn: "1 days"});
+        email: user.email}, SECRET_KEY, {expiresIn: "15 min"});
 
     const refreshToken = jwt.sign({_id: user._id, username: user.username, 
-        email: user.email}, REFRESH_KEY, {expiresIn: "5 days"});
+        email: user.email}, REFRESH_KEY, {expiresIn: "1 days"});
 
     const result = {username: user.username, email: user.email, token: accessToken, refreshToken: refreshToken}
     res.status(200).json({
@@ -87,13 +87,13 @@ userController.refreshToken = async (req, res) => {
         const user = await User.findById(payload._id);
         if(user){
             const accessToken = jwt.sign({_id: user._id, username: user.username, 
-                email: user.email}, SECRET_KEY, {expiresIn: "1 days"}); 
+                email: user.email}, SECRET_KEY, {expiresIn: "15 min"}); 
             res.json({accessToken})
         }else{
             res.status(401).json({message: 'error 401'})
         }
     } catch (error) {
-        res.status(500).json({message: 'error del servidor'})
+        res.status(500).json({message: 'Refresh token has expired'})
     }
         
     
