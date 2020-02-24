@@ -1,13 +1,19 @@
 const User = require('../models/User')
+const bcrypt = require('bcryptjs');
 
-const validateUsername = async (username)=>{
+const validateUsername = async (username) => {
     let user = await User.findOne({username});
     return user ? true: false;
 }
 
-const validateEmail = async (email)=>{
+const validateEmail = async (email) => {
     let user = await User.findOne({email});
     return user ? true: false;
+}
+
+const encryptPassword = async (password) => {
+    const salt = await bcrypt.genSalt(10);
+    return bcrypt.hash(password, salt);
 }
 
 const serializeUser = user => {
@@ -25,5 +31,6 @@ const serializeUser = user => {
 module.exports = {
     validateEmail, 
     validateUsername,
+    encryptPassword,
     serializeUser
 }

@@ -8,9 +8,8 @@ router.post('/signup', userController.signUpUser);
 router.post('/signin', userController.singInUser);
 router.get('/email/:email', userController.getUserByEmail)
 router.get('/username/:username', userController.getUserByUsername)
-router.get('/profile', userAuth, async(req, res) => {
-    return res.json(serializeUser(req.user))
-})
+router.get('/profile', userAuth, userController.profile)
+router.post('/update', userAuth, userController.updateUser)
 router.post('/refresh', userController.refreshToken);
 
 

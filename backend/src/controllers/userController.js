@@ -3,7 +3,7 @@ const User = require('../models/User');
 const jwt = require('jsonwebtoken');
 
 //Metodos auxiliates
-const {validateUsername, validateEmail} = require('../utils/user')
+const {validateUsername, validateEmail, encryptPassword} = require('../utils/user')
 
 //Variable de entorno
 const { SECRET_KEY, REFRESH_KEY } = require('../config/index') 
@@ -32,12 +32,15 @@ userController.signUpUser = async (req, res) =>{
         }
         
         
-        newUser.password = await newUser.encryptPassword(newUser.password);
+        newUser.password = await encryptPassword(newUser.password);
 
         await newUser.save();
-    
-        /*const token = jwt.sign({_id: newUser._id}, SECRET_KEY);
-        res.status(200).json({token: token})*/
+
+        res.status(200).json({
+            message: 'User register successfully',
+            success: true
+        })
+        
     } catch (error) {
         return res.status(500).json({
             message: 'Unable to create your account',
@@ -95,7 +98,39 @@ userController.refreshToken = async (req, res) => {
     } catch (error) {
         res.status(500).json({message: 'Refresh token has expired'})
     }
-        
+
+}
+
+userController.profile = async (req, res) =>{
+
+    try {
+        const idUser = req.user._id;
+
+        const user = await User.findById(idUser);
+
+        if(user){
+            return res.status(200).json(user)
+        }else{
+            return res.status(401).json({message: 'Not user found'})
+        }
+    } catch (error) {
+        return res.status(500).json({message: 'Unable to access to profile'})
+    }
+    
+}
+
+userController.updateUser = async(req, res) => {
+    try {
+        const idUser = req.user._id;
+
+        req.body.password = await encryptPassword(req.body.password)
+
+        await User.findByIdAndUpdate(idUser, {$set: req.body})
+        return res.status(200).json({message: 'Profile updated', 
+            success: true});
+    } catch (error) {
+        return res.status(500).json({message: 'Unable to update to profile'})
+    }
     
 
 }
